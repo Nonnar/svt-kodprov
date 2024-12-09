@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
+import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -15,8 +16,11 @@ import org.example.svtkodprov.model.ProgramsResponse
 
 class SverigesRadioClient {
 
-    private var client = OkHttpClient();
-    val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
+    private val client = OkHttpClient().newBuilder().build().also {
+        Dispatcher().maxRequests = 3
+    }
+
+    private val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
         setDefaultUseWrapper(false)
     }).registerKotlinModule()
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
@@ -28,14 +32,11 @@ class SverigesRadioClient {
         val programs = arrayListOf<ProgramModel>();
         var apiUrl = "http://api.sr.se/api/v2/programs"
 
-
-
         while (morePages) {
 
             val response = sendRequest(apiUrl)
             val deserializedResponse = xmlDeserializer.readValue(response?.body?.string(), ProgramsResponse::class.java)
 
-            println(deserializedResponse)
             for (program in deserializedResponse.programs.program) {
                 programs.add(ProgramModel(program.id.toInt(), program.name, program.description))
             }
@@ -52,15 +53,13 @@ class SverigesRadioClient {
     }
 
     fun getRadioProgramEpisode(programId: Long): EpisodeModel? {
-        val apiUrl = "http://api.sr.se/api/v2/episodes/getlatest?programid=$programId"
 
+        val apiUrl = "http://api.sr.se/api/v2/episodes/getlatest?programid=$programId"
         val response = sendRequest(apiUrl)
 
         if (response != null) {
 
             val deserializedResponse = xmlDeserializer.readValue(response.body?.string(), EpisodesResponse::class.java)
-            println(deserializedResponse)
-
             val lastEpisode = deserializedResponse.episode
 
             return EpisodeModel(
@@ -73,7 +72,6 @@ class SverigesRadioClient {
 
         return null
     }
-
 
     private fun sendRequest(apiUrl: String): Response? {
 

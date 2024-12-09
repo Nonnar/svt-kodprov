@@ -51,7 +51,7 @@ class RadioProgramService(
 
             return null
         } else if (radioProgramCount == 1) {
-               val episodeModel = sverigesRadioClient.getRadioProgramEpisode(radioPrograms[0].programId)
+            val episodeModel = sverigesRadioClient.getRadioProgramEpisode(radioPrograms[0].programId)
 
             return episodeModel
         } else {

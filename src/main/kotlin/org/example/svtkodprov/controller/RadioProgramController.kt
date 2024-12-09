@@ -12,13 +12,22 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping(path = ["/api"])
 class RadioProgramController(private val radioProgramService: RadioProgramService) {
 
-    @GetMapping("/getProgram/{programName}")
-    fun getRadioProgram(@PathVariable("programName") programName: String): EpisodeModel? =
+    /**
+     * Return latest episode for a given program name
+     */
+    @GetMapping("/getLatestEpisode/{programName}")
+    fun getRadioProgramLatestEpisode(@PathVariable("programName") programName: String): EpisodeModel? =
         radioProgramService.getRadioProgramLatestEpisode(programName)
 
+    /**
+     * Gets number of programs in database
+     */
     @GetMapping("/getPrograms")
     fun getPrograms(): Int = radioProgramService.getRadioPrograms()
 
+    /**
+     * Updates database with programs from sveriges radio and returns newly added ones
+     */
     @GetMapping("updatePrograms")
     fun updatePrograms(): List<RadioProgram> = radioProgramService.updateAllRadioPrograms()
 
