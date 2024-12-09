@@ -22,7 +22,6 @@ class SverigesRadioClient {
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-
     fun getRadioPrograms(): List<ProgramModel> {
 
         var morePages = true
@@ -53,7 +52,7 @@ class SverigesRadioClient {
     }
 
     fun getRadioProgramEpisode(programId: Long): EpisodeModel? {
-        val apiUrl = "http://api.sr.se/api/v2/episodes/index?programid=$programId"
+        val apiUrl = "http://api.sr.se/api/v2/episodes/getlatest?programid=$programId"
 
         val response = sendRequest(apiUrl)
 
@@ -62,17 +61,14 @@ class SverigesRadioClient {
             val deserializedResponse = xmlDeserializer.readValue(response.body?.string(), EpisodesResponse::class.java)
             println(deserializedResponse)
 
-            if (deserializedResponse.episodes.episode.isNotEmpty()) {
+            val lastEpisode = deserializedResponse.episode
 
-                val lastEpisode = deserializedResponse.episodes.episode[0]
-
-                return EpisodeModel(
-                    programId.toInt(),
-                    lastEpisode.title,
-                    lastEpisode.description,
-                    lastEpisode.publishdateutc
-                )
-            }
+            return EpisodeModel(
+                programId.toInt(),
+                lastEpisode.title,
+                lastEpisode.description,
+                lastEpisode.publishdateutc
+            )
         }
 
         return null

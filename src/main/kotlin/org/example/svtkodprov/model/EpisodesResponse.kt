@@ -4,12 +4,7 @@ import java.util.*
 
 data class EpisodesResponse(
     val copyright: String,
-    val pagination: Pagination,
-    val episodes: Episodes
-)
-
-data class Episodes(
-    val episode: List<Episode>
+    val episode: Episode
 )
 
 data class Episode(
