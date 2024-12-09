@@ -70,7 +70,7 @@ class SverigesRadioClient {
             )
         }
 
-        return null
+        throw IllegalArgumentException("Failed to get a response with programid=$programId")
     }
 
     private fun sendRequest(apiUrl: String): Response? {

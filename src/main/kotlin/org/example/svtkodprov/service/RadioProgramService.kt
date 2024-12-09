@@ -48,18 +48,15 @@ class RadioProgramService(
         val radioProgramCount = radioPrograms.count()
 
         if (radioProgramCount == 0) {
-
-            return null
+            throw IllegalArgumentException("No program found with name $name")
         } else if (radioProgramCount == 1) {
             val episodeModel = sverigesRadioClient.getRadioProgramEpisode(radioPrograms[0].programId)
 
             return episodeModel
         } else {
-
-            return null
+            throw IllegalArgumentException("Multiple programs found with name $name")
         }
     }
-
 
 }
 
